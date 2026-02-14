@@ -3,6 +3,7 @@
 import { colors, accentOpacity, fontFamily } from '@/lib/theme';
 import type { KPIData } from '@/lib/types';
 import useAnimatedCounter from '@/lib/hooks/useAnimatedCounter';
+import useIntersectionReveal from '@/lib/hooks/useIntersectionReveal';
 
 function formatValue(value: number, format: KPIData['format'], prefix?: string, suffix?: string): string {
   let formatted: string;
@@ -11,7 +12,7 @@ function formatValue(value: number, format: KPIData['format'], prefix?: string, 
       formatted = value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
       break;
     case 'percent':
-      formatted = `${value.toFixed(1)}%`;
+      formatted = value.toFixed(1);
       break;
     default:
       formatted = value.toLocaleString('en-US');
@@ -27,11 +28,13 @@ interface KPIProps {
 }
 
 export default function KPI({ data, animate = true }: KPIProps) {
-  const displayValue = useAnimatedCounter(data.value, animate ? 1200 : 0);
+  const { ref, revealed } = useIntersectionReveal<HTMLDivElement>({ threshold: 0.1, rootMargin: '0px', once: true });
+  const displayValue = useAnimatedCounter(data.value, animate ? 1200 : 0, revealed);
   const delta = data.previousValue !== undefined ? ((data.value - data.previousValue) / data.previousValue) * 100 : null;
 
   return (
     <div
+      ref={ref}
       style={{
         border: `1px solid ${accentOpacity[50]}`,
         borderRadius: 2,
