@@ -1,5 +1,6 @@
 'use client';
 
+import { ReactNode } from 'react';
 import { colors, accentOpacity, fontFamily } from '@/lib/theme';
 
 interface ComparisonItem {
@@ -12,6 +13,12 @@ interface ComparisonItem {
 interface ComparisonCardProps {
   items: ComparisonItem[];
   title?: string;
+  /** Called when a comparison row is hovered */
+  onItemHover?: (item: ComparisonItem, delta: number) => void;
+  /** Called when hover leaves all rows */
+  onItemHoverEnd?: () => void;
+  /** Optional readout bar rendered below the comparison bars */
+  footer?: ReactNode;
 }
 
 function fmt(v: number, format: ComparisonItem['format']): string {
@@ -25,7 +32,7 @@ function fmt(v: number, format: ComparisonItem['format']): string {
   }
 }
 
-export default function ComparisonCard({ items, title }: ComparisonCardProps) {
+export default function ComparisonCard({ items, title, onItemHover, onItemHoverEnd, footer }: ComparisonCardProps) {
   return (
     <div
       style={{
@@ -45,7 +52,12 @@ export default function ComparisonCard({ items, title }: ComparisonCardProps) {
           const delta = ((item.current - item.previous) / item.previous) * 100;
           const barPct = Math.min((item.current / Math.max(item.current, item.previous)) * 100, 100);
           return (
-            <div key={item.label}>
+            <div
+              key={item.label}
+              style={{ cursor: onItemHover ? 'pointer' : undefined }}
+              onMouseEnter={() => onItemHover?.(item, delta)}
+              onMouseLeave={() => onItemHoverEnd?.()}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ fontSize: 13, color: colors.secondaryText }}>{item.label}</span>
                 <span style={{ fontFamily: fontFamily.mono, fontSize: 13 }}>
@@ -71,6 +83,9 @@ export default function ComparisonCard({ items, title }: ComparisonCardProps) {
           );
         })}
       </div>
+      {footer && (
+        <div style={{ marginTop: 16 }}>{footer}</div>
+      )}
     </div>
   );
 }

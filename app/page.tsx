@@ -18,6 +18,7 @@ import FunnelChart from '@/components/charts/FunnelChart';
 import Sparkline from '@/components/ui/Sparkline';
 import LiveReadout from '@/components/ui/LiveReadout';
 import useKeyboardNav from '@/lib/hooks/useKeyboardNav';
+import useHoverReadout from '@/lib/hooks/useHoverReadout';
 import { colors, accentOpacity } from '@/lib/theme';
 import {
   sampleKPIs,
@@ -38,6 +39,11 @@ const SLIDE_TITLES = [
   'QoQ Comparison',
 ];
 
+/** Monthly revenue totals for computing contextual MoM growth */
+const revenueByMonth: Record<string, number> = {};
+sampleMonthlyRevenue.forEach((d) => { revenueByMonth[d.month] = d.revenue; });
+const monthOrder = sampleMonthlyRevenue.map((d) => d.month);
+
 export default function Home() {
   const [slide, setSlide] = useState(0);
 
@@ -45,6 +51,38 @@ export default function Home() {
   const prev = useCallback(() => setSlide((s) => Math.max(s - 1, 0)), []);
 
   useKeyboardNav({ onNext: next, onPrev: prev });
+
+  // ── Hover readouts for each chart-bearing slide ──
+  const revenueHover = useHoverReadout();
+  const funnelHover = useHoverReadout();
+  const comparisonHover = useHoverReadout();
+
+  // ── Revenue bar chart hover handler ──
+  const handleRevenueBarHover = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (data: any) => {
+      if (!data || !data.activePayload || data.activePayload.length === 0) return;
+      const payload = data.activePayload[0].payload as { month: string; revenue: number };
+      const idx = monthOrder.indexOf(payload.month);
+      const prevRevenue = idx > 0 ? sampleMonthlyRevenue[idx - 1].revenue : null;
+      const momGrowth = prevRevenue ? ((payload.revenue - prevRevenue) / prevRevenue) * 100 : null;
+
+      let message: string;
+      if (momGrowth !== null) {
+        const direction = momGrowth >= 0 ? 'up' : 'down';
+        message = `${payload.month} REVENUE ${direction} ${Math.abs(momGrowth).toFixed(1)}% MoM — $${(payload.revenue / 1000).toFixed(0)}K closed`;
+      } else {
+        message = `${payload.month} BASELINE — $${(payload.revenue / 1000).toFixed(0)}K closed (series start)`;
+      }
+
+      revenueHover.onHover({
+        message,
+        value: payload.revenue,
+        format: 'currency',
+      });
+    },
+    [revenueHover],
+  );
 
   return (
     <>
@@ -83,7 +121,32 @@ export default function Home() {
           )}
 
           {/* ── Slide 1: Funnel ── */}
-          {slide === 1 && <FunnelChart stages={sampleFunnel} title="[PIPELINE_FUNNEL]" />}
+          {slide === 1 && (
+            <FunnelChart
+              stages={sampleFunnel}
+              title="[PIPELINE_FUNNEL]"
+              onStageHover={(stage, index, convRate) => {
+                let message: string;
+                if (index === 0) {
+                  message = `${stage.value.toLocaleString()} TOTAL LEADS — top of funnel, all channels combined`;
+                } else {
+                  const prevStage = sampleFunnel[index - 1];
+                  const dropoff = prevStage.value - stage.value;
+                  message = `${convRate!.toFixed(1)}% CONVERSION from ${prevStage.label} — ${dropoff.toLocaleString()} dropped at this stage`;
+                }
+                funnelHover.onHover({ message, value: stage.value, format: 'number' });
+              }}
+              onStageHoverEnd={funnelHover.onHoverEnd}
+              footer={
+                <LiveReadout
+                  label="HOVER A STAGE"
+                  value={sampleFunnel[0].value}
+                  format="number"
+                  hoverData={funnelHover.readout}
+                />
+              }
+            />
+          )}
 
           {/* ── Slide 2: Narrative ── */}
           {slide === 2 && (
@@ -94,9 +157,24 @@ export default function Home() {
 
           {/* ── Slide 3: Bar Chart ── */}
           {slide === 3 && (
-            <ChartCard title="[MONTHLY_REVENUE]" subtitle="Jul – Dec 2024">
+            <ChartCard
+              title="[MONTHLY_REVENUE]"
+              subtitle="Jul – Dec 2024"
+              footer={
+                <LiveReadout
+                  label="HOVER A BAR"
+                  value={sampleMonthlyRevenue.reduce((sum, d) => sum + d.revenue, 0)}
+                  format="currency"
+                  hoverData={revenueHover.readout}
+                />
+              }
+            >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sampleMonthlyRevenue}>
+                <BarChart
+                  data={sampleMonthlyRevenue}
+                  onMouseMove={handleRevenueBarHover}
+                  onMouseLeave={revenueHover.onHoverEnd}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke={accentOpacity[20]} />
                   <XAxis
                     dataKey="month"
@@ -137,7 +215,39 @@ export default function Home() {
 
           {/* ── Slide 5: Comparison ── */}
           {slide === 5 && (
-            <ComparisonCard title="[QOQ_COMPARISON]" items={sampleComparison} />
+            <ComparisonCard
+              title="[QOQ_COMPARISON]"
+              items={sampleComparison}
+              onItemHover={(item, delta) => {
+                const direction = delta >= 0 ? 'improved' : 'declined';
+                const absChange = Math.abs(item.current - item.previous);
+                let detail: string;
+                switch (item.format) {
+                  case 'currency':
+                    detail = `${item.label} ${direction} ${Math.abs(delta).toFixed(1)}% QoQ — $${absChange.toLocaleString()} net change`;
+                    break;
+                  case 'percent':
+                    detail = `${item.label} ${direction} ${absChange.toFixed(1)}pp QoQ — now at ${item.current.toFixed(1)}%`;
+                    break;
+                  default:
+                    detail = `${item.label} ${direction} ${Math.abs(delta).toFixed(1)}% QoQ — moved from ${item.previous.toLocaleString()} to ${item.current.toLocaleString()}`;
+                }
+                comparisonHover.onHover({
+                  message: detail,
+                  value: item.current,
+                  format: item.format,
+                });
+              }}
+              onItemHoverEnd={comparisonHover.onHoverEnd}
+              footer={
+                <LiveReadout
+                  label="HOVER A METRIC"
+                  value={sampleComparison.length}
+                  format="number"
+                  hoverData={comparisonHover.readout}
+                />
+              }
+            />
           )}
         </section>
       </PageWrap>

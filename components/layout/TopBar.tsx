@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { colors } from '@/lib/theme';
+import { colors, accentOpacity } from '@/lib/theme';
 
 interface TopBarProps {
   title: string;

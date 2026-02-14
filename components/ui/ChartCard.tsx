@@ -7,10 +7,12 @@ interface ChartCardProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
+  /** Optional readout bar rendered below the chart area */
+  footer?: ReactNode;
   className?: string;
 }
 
-export default function ChartCard({ title, subtitle, children, className = '' }: ChartCardProps) {
+export default function ChartCard({ title, subtitle, children, footer, className = '' }: ChartCardProps) {
   return (
     <div
       className={className}
@@ -39,6 +41,9 @@ export default function ChartCard({ title, subtitle, children, className = '' }:
         )}
       </div>
       <div style={{ width: '100%', height: 280 }}>{children}</div>
+      {footer && (
+        <div style={{ marginTop: 16 }}>{footer}</div>
+      )}
     </div>
   );
 }

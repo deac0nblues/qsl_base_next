@@ -1,14 +1,21 @@
 'use client';
 
+import { ReactNode } from 'react';
 import { colors, accentOpacity, fontFamily } from '@/lib/theme';
 import type { FunnelStage } from '@/lib/types';
 
 interface FunnelChartProps {
   stages: FunnelStage[];
   title?: string;
+  /** Called when a funnel stage is hovered */
+  onStageHover?: (stage: FunnelStage, index: number, conversionRate: number | null) => void;
+  /** Called when hover leaves all stages */
+  onStageHoverEnd?: () => void;
+  /** Optional readout bar rendered below the funnel */
+  footer?: ReactNode;
 }
 
-export default function FunnelChart({ stages, title }: FunnelChartProps) {
+export default function FunnelChart({ stages, title, onStageHover, onStageHoverEnd, footer }: FunnelChartProps) {
   const maxValue = Math.max(...stages.map((s) => s.value));
 
   return (
@@ -27,16 +34,22 @@ export default function FunnelChart({ stages, title }: FunnelChartProps) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {stages.map((stage, i) => {
           const pct = (stage.value / maxValue) * 100;
-          const convRate = i > 0 ? ((stage.value / stages[i - 1].value) * 100).toFixed(1) : null;
+          const convRate = i > 0 ? ((stage.value / stages[i - 1].value) * 100) : null;
+          const convRateStr = convRate !== null ? convRate.toFixed(1) : null;
           return (
-            <div key={stage.label}>
+            <div
+              key={stage.label}
+              style={{ cursor: onStageHover ? 'pointer' : undefined }}
+              onMouseEnter={() => onStageHover?.(stage, i, convRate)}
+              onMouseLeave={() => onStageHoverEnd?.()}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <span style={{ fontSize: 13, color: colors.secondaryText }}>{stage.label}</span>
                 <span style={{ fontFamily: fontFamily.mono, fontSize: 13 }}>
                   {stage.value.toLocaleString()}
-                  {convRate && (
+                  {convRateStr && (
                     <span style={{ color: colors.accent, marginLeft: 8, fontSize: 11 }}>
-                      {convRate}%
+                      {convRateStr}%
                     </span>
                   )}
                 </span>
@@ -65,6 +78,9 @@ export default function FunnelChart({ stages, title }: FunnelChartProps) {
           );
         })}
       </div>
+      {footer && (
+        <div style={{ marginTop: 16 }}>{footer}</div>
+      )}
     </div>
   );
 }
