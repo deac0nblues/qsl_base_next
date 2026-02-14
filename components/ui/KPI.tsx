@@ -16,7 +16,9 @@ function formatValue(value: number, format: KPIData['format'], prefix?: string, 
     default:
       formatted = value.toLocaleString('en-US');
   }
-  return `${prefix ?? ''}${formatted}${suffix ?? ''}`;
+  const resolvedPrefix = prefix && !formatted.startsWith(prefix) ? prefix : '';
+  const resolvedSuffix = suffix && !formatted.endsWith(suffix) ? suffix : '';
+  return `${resolvedPrefix}${formatted}${resolvedSuffix}`;
 }
 
 interface KPIProps {
