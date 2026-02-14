@@ -23,6 +23,7 @@ export default function useKeyboardNav({ onNext, onPrev, enabled = true }: UseKe
         case 'ArrowRight':
         case 'ArrowDown':
         case ' ':
+        case 'Enter':
           e.preventDefault();
           onNext();
           break;

@@ -199,10 +199,7 @@ a {
 }
 
 /* ── Page Content Spacing ── */
-/* Slide frame fills viewport below the sticky nav; no extra section padding */
-main > section:first-child {
-  padding-top: 0 !important;
-}
+/* Slide frame fills viewport below the sticky nav */
 
 /* ── TopBar Dot Indicator ── */
 .topbar-dot-active {

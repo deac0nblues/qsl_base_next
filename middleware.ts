@@ -3,8 +3,18 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Middleware that protects all routes behind a password gate.
  * If the `qsl_auth` cookie is missing, the user is redirected to /gate.
+ * When no ENGAGEMENT_PASSWORD env var is set, the gate is bypassed entirely.
  */
 export function middleware(request: NextRequest) {
+  // If no password is configured, bypass the gate entirely
+  if (!process.env.ENGAGEMENT_PASSWORD) {
+    // If someone visits /gate when no password is set, redirect to /
+    if (request.nextUrl.pathname === '/gate') {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+    return NextResponse.next();
+  }
+
   const authCookie = request.cookies.get('qsl_auth');
 
   if (authCookie?.value === 'authenticated') {

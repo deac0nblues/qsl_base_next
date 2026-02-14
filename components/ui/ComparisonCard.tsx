@@ -44,6 +44,14 @@ export default function ComparisonCard({ items, title, onItemHover, onItemHoverE
         transition: 'all 200ms',
         ...(fill ? { flex: 1, display: 'flex', flexDirection: 'column' as const, minHeight: 0 } : {}),
       }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = colors.accent;
+        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 16px ${accentOpacity[25]}`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = accentOpacity[50];
+        (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+      }}
     >
       {title && (
         <span className="code-accent" style={{ display: 'block', marginBottom: 16, flexShrink: 0 }}>
