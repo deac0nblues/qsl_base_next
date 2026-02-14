@@ -1,0 +1,70 @@
+'use client';
+
+import { colors, accentOpacity, fontFamily } from '@/lib/theme';
+import type { FunnelStage } from '@/lib/types';
+
+interface FunnelChartProps {
+  stages: FunnelStage[];
+  title?: string;
+}
+
+export default function FunnelChart({ stages, title }: FunnelChartProps) {
+  const maxValue = Math.max(...stages.map((s) => s.value));
+
+  return (
+    <div
+      style={{
+        border: `1px solid ${accentOpacity[50]}`,
+        borderRadius: 2,
+        padding: 24,
+      }}
+    >
+      {title && (
+        <span className="code-accent" style={{ display: 'block', marginBottom: 20 }}>
+          {title}
+        </span>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {stages.map((stage, i) => {
+          const pct = (stage.value / maxValue) * 100;
+          const convRate = i > 0 ? ((stage.value / stages[i - 1].value) * 100).toFixed(1) : null;
+          return (
+            <div key={stage.label}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 13, color: colors.secondaryText }}>{stage.label}</span>
+                <span style={{ fontFamily: fontFamily.mono, fontSize: 13 }}>
+                  {stage.value.toLocaleString()}
+                  {convRate && (
+                    <span style={{ color: colors.accent, marginLeft: 8, fontSize: 11 }}>
+                      {convRate}%
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div style={{ height: 28, background: accentOpacity[5], borderRadius: 2, position: 'relative' }}>
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${pct}%`,
+                    background: stage.color ?? `rgba(0, 255, 150, ${0.3 + 0.7 * (1 - i / stages.length)})`,
+                    borderRadius: 2,
+                    transition: 'width 600ms ease-out',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingLeft: 8,
+                  }}
+                >
+                  {pct > 20 && (
+                    <span style={{ fontFamily: fontFamily.mono, fontSize: 10, color: colors.background }}>
+                      {pct.toFixed(0)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
