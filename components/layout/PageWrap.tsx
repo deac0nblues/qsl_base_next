@@ -16,7 +16,9 @@ export default function PageWrap({ children, className = '' }: PageWrapProps) {
         maxWidth: spacing.maxContentWidth,
         margin: '0 auto',
         padding: '0 16px',
-        minHeight: '100vh',
+        height: 'calc(100vh - 48px)',
+        display: 'flex',
+        flexDirection: 'column',
         background: colors.background,
       }}
     >

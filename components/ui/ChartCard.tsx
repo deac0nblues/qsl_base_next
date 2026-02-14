@@ -9,10 +9,12 @@ interface ChartCardProps {
   children: ReactNode;
   /** Optional readout bar rendered below the chart area */
   footer?: ReactNode;
+  /** When true, the card stretches to fill its parent flex container */
+  fill?: boolean;
   className?: string;
 }
 
-export default function ChartCard({ title, subtitle, children, footer, className = '' }: ChartCardProps) {
+export default function ChartCard({ title, subtitle, children, footer, fill, className = '' }: ChartCardProps) {
   return (
     <div
       className={className}
@@ -22,6 +24,7 @@ export default function ChartCard({ title, subtitle, children, footer, className
         padding: 24,
         background: colors.background,
         transition: 'all 200ms',
+        ...(fill ? { flex: 1, display: 'flex', flexDirection: 'column' as const, minHeight: 0 } : {}),
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = colors.accent;
@@ -32,7 +35,7 @@ export default function ChartCard({ title, subtitle, children, footer, className
         (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
       }}
     >
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
         <span className="code-accent" style={{ display: 'block', marginBottom: 4 }}>
           {title}
         </span>
@@ -40,9 +43,9 @@ export default function ChartCard({ title, subtitle, children, footer, className
           <span style={{ fontSize: 14, color: colors.secondaryText }}>{subtitle}</span>
         )}
       </div>
-      <div style={{ width: '100%', height: 280 }}>{children}</div>
+      <div style={{ width: '100%', ...(fill ? { flex: 1, minHeight: 0 } : { height: 280 }) }}>{children}</div>
       {footer && (
-        <div style={{ marginTop: 16 }}>{footer}</div>
+        <div style={{ marginTop: 16, flexShrink: 0 }}>{footer}</div>
       )}
     </div>
   );

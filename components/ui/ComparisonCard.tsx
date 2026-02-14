@@ -19,6 +19,8 @@ interface ComparisonCardProps {
   onItemHoverEnd?: () => void;
   /** Optional readout bar rendered below the comparison bars */
   footer?: ReactNode;
+  /** When true, the card stretches to fill its parent flex container */
+  fill?: boolean;
 }
 
 function fmt(v: number, format: ComparisonItem['format']): string {
@@ -32,7 +34,7 @@ function fmt(v: number, format: ComparisonItem['format']): string {
   }
 }
 
-export default function ComparisonCard({ items, title, onItemHover, onItemHoverEnd, footer }: ComparisonCardProps) {
+export default function ComparisonCard({ items, title, onItemHover, onItemHoverEnd, footer, fill }: ComparisonCardProps) {
   return (
     <div
       style={{
@@ -40,14 +42,19 @@ export default function ComparisonCard({ items, title, onItemHover, onItemHoverE
         borderRadius: 2,
         padding: 24,
         transition: 'all 200ms',
+        ...(fill ? { flex: 1, display: 'flex', flexDirection: 'column' as const, minHeight: 0 } : {}),
       }}
     >
       {title && (
-        <span className="code-accent" style={{ display: 'block', marginBottom: 16 }}>
+        <span className="code-accent" style={{ display: 'block', marginBottom: 16, flexShrink: 0 }}>
           {title}
         </span>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        ...(fill ? { flex: 1, justifyContent: 'space-evenly' as const, minHeight: 0 } : { gap: 16 }),
+      }}>
         {items.map((item) => {
           const delta = ((item.current - item.previous) / item.previous) * 100;
           const barPct = Math.min((item.current / Math.max(item.current, item.previous)) * 100, 100);
@@ -84,7 +91,7 @@ export default function ComparisonCard({ items, title, onItemHover, onItemHoverE
         })}
       </div>
       {footer && (
-        <div style={{ marginTop: 16 }}>{footer}</div>
+        <div style={{ marginTop: 16, flexShrink: 0 }}>{footer}</div>
       )}
     </div>
   );

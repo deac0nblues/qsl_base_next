@@ -12,6 +12,8 @@ interface DataTableProps {
   columns: Column[];
   rows: Record<string, unknown>[];
   title?: string;
+  /** When true, the table stretches to fill its parent flex container */
+  fill?: boolean;
 }
 
 function fmtCell(value: unknown, format?: Column['format']): string {
@@ -29,22 +31,23 @@ function fmtCell(value: unknown, format?: Column['format']): string {
   }
 }
 
-export default function DataTable({ columns, rows, title }: DataTableProps) {
+export default function DataTable({ columns, rows, title, fill }: DataTableProps) {
   return (
     <div
       style={{
         border: `1px solid ${accentOpacity[50]}`,
         borderRadius: 2,
         overflow: 'hidden',
+        ...(fill ? { flex: 1, display: 'flex', flexDirection: 'column' as const, minHeight: 0 } : {}),
       }}
     >
       {title && (
-        <div style={{ padding: '16px 24px', borderBottom: `1px solid ${accentOpacity[20]}` }}>
+        <div style={{ padding: '16px 24px', borderBottom: `1px solid ${accentOpacity[20]}`, flexShrink: 0 }}>
           <span className="code-accent">{title}</span>
         </div>
       )}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ overflowX: 'auto', ...(fill ? { flex: 1, display: 'flex', flexDirection: 'column' as const } : {}) }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', ...(fill ? { flex: 1 } : {}) }}>
           <thead>
             <tr>
               {columns.map((col) => (
@@ -75,6 +78,7 @@ export default function DataTable({ columns, rows, title }: DataTableProps) {
                 style={{
                   borderBottom: i < rows.length - 1 ? `1px solid ${accentOpacity[20]}` : undefined,
                   transition: 'background 200ms',
+                  ...(fill ? { height: `${100 / rows.length}%` } : {}),
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(0,255,150,0.05)';
@@ -87,7 +91,7 @@ export default function DataTable({ columns, rows, title }: DataTableProps) {
                   <td
                     key={col.key}
                     style={{
-                      padding: '10px 16px',
+                      padding: fill ? '16px 16px' : '10px 16px',
                       fontSize: 14,
                       color: colors.secondaryText,
                       whiteSpace: 'nowrap',

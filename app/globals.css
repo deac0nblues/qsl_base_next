@@ -199,9 +199,9 @@ a {
 }
 
 /* ── Page Content Spacing ── */
-/* Reduce top whitespace between sticky nav and first content section */
+/* Slide frame fills viewport below the sticky nav; no extra section padding */
 main > section:first-child {
-  padding-top: 24px !important;
+  padding-top: 0 !important;
 }
 
 /* ── TopBar Dot Indicator ── */

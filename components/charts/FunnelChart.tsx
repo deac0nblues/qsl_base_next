@@ -13,9 +13,11 @@ interface FunnelChartProps {
   onStageHoverEnd?: () => void;
   /** Optional readout bar rendered below the funnel */
   footer?: ReactNode;
+  /** When true, the card stretches to fill its parent flex container */
+  fill?: boolean;
 }
 
-export default function FunnelChart({ stages, title, onStageHover, onStageHoverEnd, footer }: FunnelChartProps) {
+export default function FunnelChart({ stages, title, onStageHover, onStageHoverEnd, footer, fill }: FunnelChartProps) {
   const maxValue = Math.max(...stages.map((s) => s.value));
 
   return (
@@ -24,14 +26,19 @@ export default function FunnelChart({ stages, title, onStageHover, onStageHoverE
         border: `1px solid ${accentOpacity[50]}`,
         borderRadius: 2,
         padding: 24,
+        ...(fill ? { flex: 1, display: 'flex', flexDirection: 'column' as const, minHeight: 0 } : {}),
       }}
     >
       {title && (
-        <span className="code-accent" style={{ display: 'block', marginBottom: 20 }}>
+        <span className="code-accent" style={{ display: 'block', marginBottom: 20, flexShrink: 0 }}>
           {title}
         </span>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        ...(fill ? { flex: 1, justifyContent: 'space-evenly' as const, minHeight: 0 } : { gap: 12 }),
+      }}>
         {stages.map((stage, i) => {
           const pct = (stage.value / maxValue) * 100;
           const convRate = i > 0 ? ((stage.value / stages[i - 1].value) * 100) : null;
@@ -79,7 +86,7 @@ export default function FunnelChart({ stages, title, onStageHover, onStageHoverE
         })}
       </div>
       {footer && (
-        <div style={{ marginTop: 16 }}>{footer}</div>
+        <div style={{ marginTop: 16, flexShrink: 0 }}>{footer}</div>
       )}
     </div>
   );
