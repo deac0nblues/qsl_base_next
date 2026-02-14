@@ -49,6 +49,7 @@ export default function Home() {
 
   const next = useCallback(() => setSlide((s) => Math.min(s + 1, SLIDE_TITLES.length - 1)), []);
   const prev = useCallback(() => setSlide((s) => Math.max(s - 1, 0)), []);
+  const goTo = useCallback((i: number) => setSlide(Math.max(0, Math.min(i, SLIDE_TITLES.length - 1))), []);
 
   useKeyboardNav({ onNext: next, onPrev: prev });
 
@@ -93,6 +94,7 @@ export default function Home() {
         totalSlides={SLIDE_TITLES.length}
         onPrev={prev}
         onNext={next}
+        onGoToSlide={goTo}
       />
       <ClickZones onPrev={prev} onNext={next} />
       <PageWrap>
