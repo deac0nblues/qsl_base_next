@@ -1,27 +1,47 @@
 'use client';
 
-import { useState, FormEvent, ReactNode } from 'react';
+import { useState, useRef, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { colors, accentOpacity, fontFamily } from '@/lib/theme';
 
-interface PasswordGateProps {
-  password: string;
-  children: ReactNode;
-}
-
-export default function PasswordGate({ password, children }: PasswordGateProps) {
-  const [unlocked, setUnlocked] = useState(false);
+export default function PasswordGate() {
   const [input, setInput] = useState('');
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
-  if (unlocked) return <>{children}</>;
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (input === password) {
-      setUnlocked(true);
-      setError(false);
-    } else {
+    setLoading(true);
+    setError(false);
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: input }),
+      });
+
+      if (res.ok) {
+        router.push('/');
+        router.refresh();
+      } else {
+        setError(true);
+        setInput('');
+        // Re-trigger shake animation by removing and re-adding the class
+        const form = formRef.current;
+        if (form) {
+          form.classList.remove('animate-shake');
+          // Force reflow to restart animation
+          void form.offsetWidth;
+          form.classList.add('animate-shake');
+        }
+      }
+    } catch {
       setError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,6 +56,7 @@ export default function PasswordGate({ password, children }: PasswordGateProps) 
       }}
     >
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
         style={{
           border: `1px solid ${accentOpacity[50]}`,
@@ -87,31 +108,37 @@ export default function PasswordGate({ password, children }: PasswordGateProps) 
         )}
         <button
           type="submit"
+          disabled={loading}
           style={{
             width: '100%',
             padding: '12px 24px',
-            background: colors.accent,
-            color: colors.background,
+            background: loading ? 'transparent' : colors.accent,
+            color: loading ? colors.accent : colors.background,
             border: `2px solid ${colors.accent}`,
             fontFamily: fontFamily.mono,
             fontSize: 14,
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
-            cursor: 'pointer',
+            cursor: loading ? 'wait' : 'pointer',
             minHeight: 48,
             fontWeight: 600,
             transition: 'all 200ms',
+            opacity: loading ? 0.7 : 1,
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-            (e.currentTarget as HTMLButtonElement).style.color = colors.accent;
+            if (!loading) {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = colors.accent;
+            }
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = colors.accent;
-            (e.currentTarget as HTMLButtonElement).style.color = colors.background;
+            if (!loading) {
+              (e.currentTarget as HTMLButtonElement).style.background = colors.accent;
+              (e.currentTarget as HTMLButtonElement).style.color = colors.background;
+            }
           }}
         >
-          UNLOCK
+          {loading ? 'VERIFYING...' : 'UNLOCK'}
         </button>
       </form>
     </div>
