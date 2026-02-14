@@ -209,6 +209,42 @@ main > section:first-child {
   box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.5), 0 0 12px rgba(var(--accent-rgb), 0.2);
 }
 
+/* ── Funnel Bar Rise Animation ── */
+@keyframes funnelBarRise {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* ── Detail Panel Expand ── */
+@keyframes detailExpand {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 300px;
+    opacity: 1;
+  }
+}
+
+/* ── Drop-off Badge ── */
+@keyframes dropoffFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ── Selection ── */
 ::selection {
   background: rgba(var(--accent-rgb), 0.3);

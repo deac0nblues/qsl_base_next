@@ -229,6 +229,8 @@ export default function Home() {
                 columns={sampleTableColumns}
                 rows={sampleTableRows}
                 fill
+                trendKey="trend"
+                detailKey="detail"
               />
             </div>
           )}
