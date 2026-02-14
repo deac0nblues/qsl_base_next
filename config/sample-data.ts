@@ -49,10 +49,34 @@ export const sampleTableColumns = [
 ];
 
 export const sampleTableRows = [
-  { name: 'Sarah Chen', deals: 28, revenue: 520000, winRate: 42.1 },
-  { name: 'Marcus Johnson', deals: 24, revenue: 480000, winRate: 38.5 },
-  { name: 'Priya Patel', deals: 31, revenue: 445000, winRate: 36.2 },
-  { name: 'David Kim', deals: 22, revenue: 410000, winRate: 33.0 },
-  { name: 'Emma Wilson', deals: 19, revenue: 350000, winRate: 28.4 },
-  { name: 'James Liu', deals: 18, revenue: 245000, winRate: 25.7 },
+  {
+    name: 'Sarah Chen', deals: 28, revenue: 520000, winRate: 42.1,
+    trend: [32, 38, 42, 45, 48, 52, 55, 60, 58, 62, 65, 68],
+    detail: { avgDealSize: 18571, pipeline: 840000, quota: 500000, calls: 142, meetings: 38, proposals: 31 },
+  },
+  {
+    name: 'Marcus Johnson', deals: 24, revenue: 480000, winRate: 38.5,
+    trend: [28, 30, 35, 38, 36, 40, 42, 45, 44, 48, 50, 48],
+    detail: { avgDealSize: 20000, pipeline: 720000, quota: 500000, calls: 128, meetings: 32, proposals: 26 },
+  },
+  {
+    name: 'Priya Patel', deals: 31, revenue: 445000, winRate: 36.2,
+    trend: [22, 26, 30, 28, 34, 36, 38, 40, 42, 44, 45, 44],
+    detail: { avgDealSize: 14355, pipeline: 680000, quota: 450000, calls: 156, meetings: 42, proposals: 35 },
+  },
+  {
+    name: 'David Kim', deals: 22, revenue: 410000, winRate: 33.0,
+    trend: [18, 20, 22, 24, 28, 30, 32, 34, 36, 38, 40, 41],
+    detail: { avgDealSize: 18636, pipeline: 560000, quota: 450000, calls: 118, meetings: 28, proposals: 24 },
+  },
+  {
+    name: 'Emma Wilson', deals: 19, revenue: 350000, winRate: 28.4,
+    trend: [15, 18, 16, 20, 22, 24, 26, 28, 30, 32, 34, 35],
+    detail: { avgDealSize: 18421, pipeline: 420000, quota: 400000, calls: 96, meetings: 22, proposals: 18 },
+  },
+  {
+    name: 'James Liu', deals: 18, revenue: 245000, winRate: 25.7,
+    trend: [10, 12, 14, 16, 18, 16, 20, 22, 24, 22, 24, 24],
+    detail: { avgDealSize: 13611, pipeline: 380000, quota: 400000, calls: 88, meetings: 18, proposals: 15 },
+  },
 ];
