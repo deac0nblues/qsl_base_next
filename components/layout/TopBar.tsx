@@ -42,19 +42,21 @@ export default function TopBar({
     >
       {/* Left: Logo + Client info on one line */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span
+        <div
           style={{
             fontFamily: fontFamily.sans,
             fontSize: 13,
             fontWeight: fontWeight.semibold,
-            letterSpacing: letterSpacing.tightMd,
             color: colors.foreground,
-            lineHeight: 1,
-            whiteSpace: 'nowrap',
+            lineHeight: 1.2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
           }}
         >
-          Quicksilver Labs
-        </span>
+          <div>Quicksilver</div>
+          <div>Labs</div>
+        </div>
         {title && (
           <>
             <span
