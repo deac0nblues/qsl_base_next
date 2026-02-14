@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { colors, accentOpacity } from '@/lib/theme';
+import { useState } from 'react';
+import { colors } from '@/lib/theme';
 
 interface TopBarProps {
   title: string;
@@ -13,13 +13,7 @@ interface TopBarProps {
 }
 
 export default function TopBar({ title, subtitle, currentSlide, totalSlides, onPrev, onNext }: TopBarProps) {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 0);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [hoveredBtn, setHoveredBtn] = useState<'prev' | 'next' | null>(null);
 
   return (
     <nav
@@ -40,54 +34,61 @@ export default function TopBar({ title, subtitle, currentSlide, totalSlides, onP
         <span style={{ display: 'block', marginBottom: 2, color: '#FFFFFF', lineHeight: 1.2 }}>
           Quicksilver<br />Labs
         </span>
-        <span style={{ fontWeight: 300, fontSize: 18 }}>{title}</span>
-        {subtitle && (
-          <span style={{ color: colors.secondaryText, marginLeft: 12, fontSize: 14 }}>{subtitle}</span>
-        )}
       </div>
 
+      {/* Slide navigation */}
       {currentSlide !== undefined && totalSlides !== undefined && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button
             onClick={onPrev}
+            onMouseEnter={() => setHoveredBtn('prev')}
+            onMouseLeave={() => setHoveredBtn(null)}
             aria-label="Previous slide"
             style={{
               background: 'none',
-              border: `1px solid ${accentOpacity[40]}`,
-              color: colors.accent,
-              width: 36,
-              height: 36,
+              border: 'none',
+              color: hoveredBtn === 'prev' ? colors.foreground : colors.secondaryText,
+              fontSize: 16,
+              width: 28,
+              height: 28,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 200ms',
+              transition: 'color 150ms',
               fontFamily: 'monospace',
+              padding: 0,
+              opacity: hoveredBtn === 'prev' ? 1 : 0.6,
             }}
           >
-            ←
+            ‹
           </button>
-          <span className="annotation">
+          <span className="annotation" style={{ fontSize: 12, minWidth: 32, textAlign: 'center' }}>
             {currentSlide + 1} / {totalSlides}
           </span>
           <button
             onClick={onNext}
+            onMouseEnter={() => setHoveredBtn('next')}
+            onMouseLeave={() => setHoveredBtn(null)}
             aria-label="Next slide"
             style={{
               background: 'none',
-              border: `1px solid ${accentOpacity[40]}`,
-              color: colors.accent,
-              width: 36,
-              height: 36,
+              border: 'none',
+              color: hoveredBtn === 'next' ? colors.foreground : colors.secondaryText,
+              fontSize: 16,
+              width: 28,
+              height: 28,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 200ms',
+              transition: 'color 150ms',
               fontFamily: 'monospace',
+              padding: 0,
+              opacity: hoveredBtn === 'next' ? 1 : 0.6,
             }}
           >
-            →
+            ›
           </button>
         </div>
       )}
