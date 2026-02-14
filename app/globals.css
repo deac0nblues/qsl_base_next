@@ -183,6 +183,12 @@ a {
   border-radius: 3px;
 }
 
+/* ── Page Content Spacing ── */
+/* Reduce top whitespace between sticky nav and first content section */
+main > section:first-child {
+  padding-top: 24px !important;
+}
+
 /* ── Selection ── */
 ::selection {
   background: rgba(var(--accent-rgb), 0.3);

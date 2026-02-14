@@ -21,38 +21,18 @@ export default function TopBar({ title, subtitle, currentSlide, totalSlides, onP
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        borderBottom: `1px solid ${accentOpacity[20]}`,
         background: colors.background,
-        height: 48,
-        padding: '0 24px',
+        transition: 'all 200ms',
+        padding: '12px 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}
     >
-      {/* Logo + divider + client info — single row, vertically centered */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-        <span
-          className="code-accent"
-          style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.5, whiteSpace: 'nowrap' }}
-        >
-          Quicksilver Labs
-        </span>
-        <span
-          style={{
-            display: 'inline-block',
-            width: 1,
-            height: 18,
-            background: 'rgba(255,255,255,0.12)',
-            margin: '0 14px',
-            flexShrink: 0,
-          }}
-        />
-        <span style={{ fontWeight: 300, fontSize: 14, color: colors.secondaryText, whiteSpace: 'nowrap' }}>
-          {title}
-          {subtitle && (
-            <span style={{ marginLeft: 8, fontSize: 13, opacity: 0.7 }}>{subtitle}</span>
-          )}
+      <div>
+        <span style={{ display: 'block', marginBottom: 2, color: '#FFFFFF', lineHeight: 1.2 }}>
+          Quicksilver<br />Labs
         </span>
       </div>
 

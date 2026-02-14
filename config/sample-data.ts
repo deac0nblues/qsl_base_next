@@ -3,7 +3,7 @@ import type { KPIData, FunnelStage, RepData } from '@/lib/types';
 export const sampleKPIs: KPIData[] = [
   { label: 'Revenue', value: 2450000, previousValue: 2100000, format: 'currency' },
   { label: 'Deals Closed', value: 142, previousValue: 118, format: 'number' },
-  { label: 'Win Rate', value: 34.2, previousValue: 29.8, format: 'percent', suffix: '%' },
+  { label: 'Win Rate', value: 34.0, previousValue: 29.8, format: 'percent', suffix: '%' },
   { label: 'Avg Deal Size', value: 17250, previousValue: 17800, format: 'currency' },
 ];
 
