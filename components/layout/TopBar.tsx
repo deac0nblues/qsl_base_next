@@ -28,8 +28,7 @@ export default function TopBar({ title, subtitle, currentSlide, totalSlides, onP
         top: 0,
         zIndex: 50,
         borderBottom: `1px solid ${accentOpacity[20]}`,
-        background: scrolled ? 'rgba(18, 26, 58, 0.95)' : colors.background,
-        backdropFilter: scrolled ? 'blur(8px)' : 'none',
+        background: colors.background,
         transition: 'all 200ms',
         padding: '12px 24px',
         display: 'flex',
@@ -38,8 +37,8 @@ export default function TopBar({ title, subtitle, currentSlide, totalSlides, onP
       }}
     >
       <div>
-        <span className="code-accent" style={{ display: 'block', marginBottom: 2 }}>
-          [QSL]
+        <span style={{ display: 'block', marginBottom: 2, color: '#FFFFFF', lineHeight: 1.2 }}>
+          Quicksilver<br />Labs
         </span>
         <span style={{ fontWeight: 300, fontSize: 18 }}>{title}</span>
         {subtitle && (
